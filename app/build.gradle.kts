@@ -66,4 +66,5 @@ dependencies {
     implementation(libs.apollo.runtime)
     implementation(libs.okhttp)
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.koin.androidx.compose)
 }
