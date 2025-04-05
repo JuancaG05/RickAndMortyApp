@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.apollo)
 }
 
 android {
@@ -39,6 +40,11 @@ android {
     }
 }
 
+apollo {
+    packageName.set("com.rickandmorty.app")
+    srcDir("src/main/graphql")
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -56,4 +62,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation(libs.apollo.runtime)
+    implementation(libs.okhttp)
+    implementation(libs.kotlinx.coroutines.core)
 }
