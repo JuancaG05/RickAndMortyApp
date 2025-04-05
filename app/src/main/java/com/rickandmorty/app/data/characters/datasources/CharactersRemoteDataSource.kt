@@ -8,7 +8,7 @@ import com.rickandmorty.app.domain.characters.CharacterGender
 class CharactersRemoteDataSource : ICharactersRemoteDataSource {
 
     override suspend fun getCharacters(page: Int): Pair<List<Character?>, Int?> {
-        val charactersResponse = GetCharactersNetworkOperation(page).run()
+        val charactersResponse = GetCharactersNetworkOperation().run(page)
         val nextPage = charactersResponse?.info?.next
         val listOfCharacters = charactersResponse?.results?.let { results ->
             results.map { it?.toModel() }
