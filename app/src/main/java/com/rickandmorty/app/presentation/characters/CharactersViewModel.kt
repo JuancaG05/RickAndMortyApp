@@ -23,7 +23,8 @@ class CharactersViewModel(
     fun getCharacters(page: Int) {
         viewModelScope.launch {
             val result = getCharactersUseCase.run(page)
-            _listOfCharacters.update { result }
+            val accumulatedCharacters = _listOfCharacters.value.first + result.first
+            _listOfCharacters.update { Pair(accumulatedCharacters, result.second) }
         }
     }
 }
