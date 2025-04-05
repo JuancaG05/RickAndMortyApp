@@ -6,7 +6,7 @@ data class Character(
     val species: String,
     val type: String,
     val gender: CharacterGender,
-    val origin: CharacterLocation,
+    val origin: String,
     val image: String,
     val isFavourite: Boolean = false,
 )
