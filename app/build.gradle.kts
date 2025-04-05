@@ -67,4 +67,5 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.koin.androidx.compose)
+    implementation(libs.coil.compose)
 }
