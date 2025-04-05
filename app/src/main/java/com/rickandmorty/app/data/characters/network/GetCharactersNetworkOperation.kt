@@ -1,4 +1,4 @@
-package com.rickandmorty.app.data.characters
+package com.rickandmorty.app.data.characters.network
 
 import com.apollographql.apollo3.api.Optional
 import com.rickandmorty.app.GetCharactersPageQuery
@@ -8,8 +8,8 @@ class GetCharactersNetworkOperation(
     private val page: Int
 ) {
 
-    suspend fun run(apolloClient: ApolloClient): GetCharactersPageQuery.Characters? {
-        val response = apolloClient.client.query(
+    suspend fun run(): GetCharactersPageQuery.Characters? {
+        val response = ApolloClient.client.query(
             GetCharactersPageQuery(Optional.presentIfNotNull(page))
         ).execute()
         return response.data?.characters
