@@ -37,6 +37,7 @@ import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun CharactersListScreen(
+    onClickOnCharacterCard: (Character) -> Unit,
     viewModel: CharactersViewModel = getViewModel()
 ) {
     var filterMenuExpanded by remember { mutableStateOf(false) }
@@ -108,8 +109,8 @@ fun CharactersListScreen(
         items(characters) { character ->
             character?.let {
                 CharacterCard(
-                    character = character,
-                    onClick = { }
+                    character = it,
+                    onClick = { onClickOnCharacterCard(it) }
                 )
             }
         }
