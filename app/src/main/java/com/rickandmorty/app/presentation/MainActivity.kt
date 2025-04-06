@@ -61,7 +61,7 @@ fun AppNavigation(
             val character = characterJson?.let { Json.decodeFromString<Character>(it) }
             character?.let {
                 CharacterDetailsScreen(character = it, onClickBack = {
-                    navController.popBackStack()
+                    navController.navigate(CharactersList)
                 })
             }
         }

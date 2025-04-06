@@ -11,5 +11,5 @@ data class Character(
     val gender: CharacterGender?,
     val origin: String?,
     val image: String?,
-    val isFavourite: Boolean = false,
+    var isFavourite: Boolean = false,
 )
