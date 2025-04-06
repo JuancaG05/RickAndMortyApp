@@ -66,6 +66,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.apollo.runtime)
+    implementation(libs.apollo.normalized.cache)
     implementation(libs.okhttp)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.koin.androidx.compose)
