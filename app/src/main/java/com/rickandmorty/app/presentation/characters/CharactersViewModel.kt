@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.rickandmorty.app.domain.characters.Character
 import com.rickandmorty.app.domain.characters.CharacterGender
 import com.rickandmorty.app.domain.characters.usecases.DeleteFavouriteCharacterUseCase
+import com.rickandmorty.app.domain.characters.usecases.GetCharacterUseCase
 import com.rickandmorty.app.domain.characters.usecases.GetCharactersUseCase
 import com.rickandmorty.app.domain.characters.usecases.GetFavouriteCharactersUseCase
 import com.rickandmorty.app.domain.characters.usecases.UpsertFavouriteCharacterUseCase
@@ -16,6 +17,7 @@ import kotlinx.coroutines.runBlocking
 
 class CharactersViewModel(
     private val getCharactersUseCase: GetCharactersUseCase,
+    private val getCharacterUseCase: GetCharacterUseCase,
     private val upsertFavouriteCharacterUseCase: UpsertFavouriteCharacterUseCase,
     private val deleteFavouriteCharacterUseCase: DeleteFavouriteCharacterUseCase,
     private val getFavouriteCharactersUseCase: GetFavouriteCharactersUseCase,
@@ -25,6 +27,9 @@ class CharactersViewModel(
     val listOfCharacters: StateFlow<Pair<List<Character?>, Int?>> = _listOfCharacters
 
     private val _listOfFavouriteCharacters: MutableStateFlow<List<Character>> = MutableStateFlow(emptyList())
+
+    private val _currentCharacter: MutableStateFlow<Character?> = MutableStateFlow(null)
+    val currentCharacter: StateFlow<Character?> = _currentCharacter
 
     init {
         runBlocking {
@@ -52,6 +57,13 @@ class CharactersViewModel(
         }
     }
 
+    fun getCharacter(id: String) {
+        viewModelScope.launch {
+            val result = getCharacterUseCase.run(id)
+            _currentCharacter.update { result }
+        }
+    }
+
     fun upsertFavouriteCharacter(character: Character) {
         viewModelScope.launch {
             upsertFavouriteCharacterUseCase.run(character)
@@ -69,5 +81,9 @@ class CharactersViewModel(
             val result = getFavouriteCharactersUseCase.run()
             _listOfFavouriteCharacters.update { result }
         }
+    }
+
+    fun setCurrentCharacter(character: Character?) {
+        _currentCharacter.update { character }
     }
 }

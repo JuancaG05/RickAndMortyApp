@@ -5,4 +5,5 @@ import com.rickandmorty.app.domain.characters.CharacterGender
 
 interface ICharactersRemoteDataSource {
     suspend fun getCharacters(page: Int, filterByGender: CharacterGender?): Pair<List<Character?>, Int?>
+    suspend fun getCharacter(id: String): Character?
 }

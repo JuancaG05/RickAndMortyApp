@@ -8,6 +8,7 @@ import com.rickandmorty.app.data.characters.datasources.ICharactersRemoteDataSou
 import com.rickandmorty.app.data.characters.repository.CharactersRepository
 import com.rickandmorty.app.domain.characters.repository.ICharactersRepository
 import com.rickandmorty.app.domain.characters.usecases.DeleteFavouriteCharacterUseCase
+import com.rickandmorty.app.domain.characters.usecases.GetCharacterUseCase
 import com.rickandmorty.app.domain.characters.usecases.GetCharactersUseCase
 import com.rickandmorty.app.domain.characters.usecases.GetFavouriteCharactersUseCase
 import com.rickandmorty.app.domain.characters.usecases.UpsertFavouriteCharacterUseCase
@@ -32,6 +33,7 @@ val dataModule = module {
 
 val domainModule = module {
     factoryOf(::GetCharactersUseCase)
+    factoryOf(::GetCharacterUseCase)
     factoryOf(::UpsertFavouriteCharacterUseCase)
     factoryOf(::DeleteFavouriteCharacterUseCase)
     factoryOf(::GetFavouriteCharactersUseCase)

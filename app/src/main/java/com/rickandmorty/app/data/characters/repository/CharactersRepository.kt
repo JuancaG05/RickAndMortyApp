@@ -14,6 +14,9 @@ class CharactersRepository(
     override suspend fun getCharacters(page: Int, filterByGender: CharacterGender?): Pair<List<Character?>, Int?> =
         charactersRemoteDataSource.getCharacters(page, filterByGender)
 
+    override suspend fun getCharacter(id: String): Character? =
+        charactersRemoteDataSource.getCharacter(id)
+
     override suspend fun upsertFavouriteCharacter(character: Character) {
         charactersLocalDataSource.upsertFavouriteCharacter(character)
     }

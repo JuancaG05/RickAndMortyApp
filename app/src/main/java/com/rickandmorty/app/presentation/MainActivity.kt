@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.rickandmorty.app.domain.characters.Character
 import com.rickandmorty.app.presentation.characters.CharacterDetailsScreen
 import com.rickandmorty.app.presentation.characters.CharactersListScreen
@@ -63,6 +64,18 @@ fun AppNavigation(
                 CharacterDetailsScreen(character = it, onClickBack = {
                     navController.navigate(CharactersList)
                 })
+            }
+        }
+        composable(
+            route = "characterDetailsFromDeepLink/{id}",
+            deepLinks = listOf(navDeepLink { uriPattern = "alkimiirickandmorty://character/{id}" })
+        ) { navBackStackEntry ->
+            val id = navBackStackEntry.arguments?.getString("id")
+            id?.let {
+                CharacterDetailsScreen(
+                    character = Character(id, null, null, null, null, null, null),
+                    onClickBack = { navController.navigate(CharactersList) }
+                )
             }
         }
     }

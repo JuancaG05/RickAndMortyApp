@@ -19,10 +19,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -41,115 +40,125 @@ fun CharacterDetailsScreen(
     onClickBack: () -> Unit,
     viewModel: CharactersViewModel = getViewModel()
 ) {
-    var isCharacterFavourite by remember { mutableStateOf(character.isFavourite) }
+    val currentCharacter by viewModel.currentCharacter.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "Character details")
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onClickBack
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null
-                        )
-                    }
-                }
-            )
+    LaunchedEffect(character) {
+        if (character.id != null && character.name == null && character.species == null && character.type == null
+            && character.gender == null && character.origin == null && character.image == null) {
+            viewModel.getCharacter(character.id)
+        } else {
+            viewModel.setCurrentCharacter(character)
         }
-    ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Card(
+    }
+
+
+    currentCharacter?.let { characterToDisplay ->
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(text = "Character details")
+                    },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = onClickBack
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = null
+                            )
+                        }
+                    }
+                )
+            }
+        ) { paddingValues ->
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                shape = RoundedCornerShape(8.dp)
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
-                    val painter = rememberAsyncImagePainter(
-                        model = character.image,
-                        placeholder = painterResource(R.drawable.default_character_image),
-                        error = painterResource(R.drawable.default_character_image)
-                    )
-                    Image(
-                        painter = painter,
-                        contentDescription = null,
-                        modifier = Modifier.size(150.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    character.name?.let {
-                        Text(
-                            text = it,
-                            style = TextStyle(fontWeight = FontWeight.Bold),
-                            modifier = Modifier.padding(bottom = 4.dp)
-                        )
-                    }
-
-                    character.origin?.let {
-                        Text(
-                            text = "Origin: $it",
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                    }
-
-                    character.gender?.let {
-                        Text(
-                            text = "Gender: ${it.name}",
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                    }
-
-                    character.species?.let {
-                        Text(
-                            text = "Species: $it",
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                    }
-
-                    character.type?.let {
-                        Text(
-                            text = "Type: $it",
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                    }
-
-                    IconButton(
-                        onClick = {
-                            if (!isCharacterFavourite) {
-                                viewModel.upsertFavouriteCharacter(character)
-                                isCharacterFavourite = true
-                            } else {
-                                viewModel.deleteFavouriteCharacter(character.id!!)
-                                isCharacterFavourite = false
-                            }
-                        },
-                        modifier = Modifier.size(48.dp)
+                    Column(
+                        modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Icon(
-                            painter = painterResource(id =
-                                if (isCharacterFavourite) R.drawable.favourite
-                                else R.drawable.not_favourite
-                            ),
-                            contentDescription = null
+                        val painter = rememberAsyncImagePainter(
+                            model = characterToDisplay.image,
+                            placeholder = painterResource(R.drawable.default_character_image),
+                            error = painterResource(R.drawable.default_character_image)
                         )
+                        Image(
+                            painter = painter,
+                            contentDescription = null,
+                            modifier = Modifier.size(150.dp)
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        characterToDisplay.name?.let {
+                            Text(
+                                text = it,
+                                style = TextStyle(fontWeight = FontWeight.Bold),
+                                modifier = Modifier.padding(bottom = 4.dp)
+                            )
+                        }
+
+                        characterToDisplay.origin?.let {
+                            Text(
+                                text = "Origin: $it",
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                        }
+
+                        characterToDisplay.gender?.let {
+                            Text(
+                                text = "Gender: ${it.name}",
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                        }
+
+                        characterToDisplay.species?.let {
+                            Text(
+                                text = "Species: $it",
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                        }
+
+                        characterToDisplay.type?.let {
+                            Text(
+                                text = "Type: $it",
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+                        }
+                        IconButton(
+                            onClick = {
+                                if (!characterToDisplay.isFavourite) {
+                                    viewModel.upsertFavouriteCharacter(characterToDisplay)
+                                    viewModel.setCurrentCharacter(characterToDisplay.copy(isFavourite = true))
+                                } else {
+                                    viewModel.deleteFavouriteCharacter(characterToDisplay.id!!)
+                                    viewModel.setCurrentCharacter(characterToDisplay.copy(isFavourite = false))
+                                }
+                            },
+                            modifier = Modifier.size(48.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(id =
+                                    if (characterToDisplay.isFavourite) R.drawable.favourite
+                                    else R.drawable.not_favourite
+                                ),
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
             }
         }
     }
-
 }

@@ -16,3 +16,17 @@ query GetCharactersPage($page: Int, $gender: String) {
         }
     }
 }
+
+query GetCharacter($id: ID!) {
+    character(id: $id) {
+        id
+        name
+        species
+        type
+        gender
+        origin {
+            name
+        }
+        image
+    }
+}
