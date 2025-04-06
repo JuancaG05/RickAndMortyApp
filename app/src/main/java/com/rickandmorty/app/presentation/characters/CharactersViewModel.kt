@@ -3,6 +3,7 @@ package com.rickandmorty.app.presentation.characters
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.rickandmorty.app.domain.characters.Character
+import com.rickandmorty.app.domain.characters.CharacterGender
 import com.rickandmorty.app.domain.characters.usecases.GetCharactersUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,14 +18,18 @@ class CharactersViewModel(
     val listOfCharacters: StateFlow<Pair<List<Character?>, Int?>> = _listOfCharacters
 
     init {
-        getCharacters(page = 1)
+        getCharacters(page = 1, filterByGender = null)
     }
 
-    fun getCharacters(page: Int) {
+    fun getCharacters(page: Int, filterByGender: CharacterGender?) {
         viewModelScope.launch {
-            val result = getCharactersUseCase.run(page)
-            val accumulatedCharacters = _listOfCharacters.value.first + result.first
-            _listOfCharacters.update { Pair(accumulatedCharacters, result.second) }
+            val result = getCharactersUseCase.run(page, filterByGender)
+            if (page == 1) {
+                _listOfCharacters.update { result }
+            } else {
+                val accumulatedCharacters = _listOfCharacters.value.first + result.first
+                _listOfCharacters.update { Pair(accumulatedCharacters, result.second) }
+            }
         }
     }
 }

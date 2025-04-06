@@ -12,14 +12,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -27,12 +32,16 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.rickandmorty.app.R
 import com.rickandmorty.app.domain.characters.Character
+import com.rickandmorty.app.domain.characters.CharacterGender
 import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun CharactersListScreen(
     viewModel: CharactersViewModel = getViewModel()
 ) {
+    var filterMenuExpanded by remember { mutableStateOf(false) }
+    var filterGenderSelected by remember { mutableStateOf<CharacterGender?>(null) }
+
     val listOfCharacters by viewModel.listOfCharacters.collectAsState()
     val characters = listOfCharacters.first
     val nextPage = listOfCharacters.second
@@ -48,14 +57,54 @@ fun CharactersListScreen(
 
     LaunchedEffect(isLastItemReached) {
         if (nextPage != null && isLastItemReached) {
-            viewModel.getCharacters(page = nextPage)
+            viewModel.getCharacters(page = nextPage, filterByGender = filterGenderSelected)
         }
     }
+
+    LaunchedEffect(filterGenderSelected) {
+        viewModel.getCharacters(page = 1, filterByGender = filterGenderSelected)
+    }
+
 
     LazyColumn(
         state = listState,
         modifier = Modifier.fillMaxSize()
     ) {
+        item {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Filter by gender:")
+                TextButton(
+                    onClick = { filterMenuExpanded = !filterMenuExpanded },
+                ) {
+                    Text(text = filterGenderSelected?.name ?: "ALL")
+                }
+                DropdownMenu(
+                    expanded = filterMenuExpanded,
+                    onDismissRequest = { filterMenuExpanded = false }
+                ) {
+                    DropdownMenuItem(
+                        onClick = {
+                            filterGenderSelected = null
+                            filterMenuExpanded = false
+                        },
+                        text = { Text(text = "ALL") }
+                    )
+                    CharacterGender.entries.forEach { gender ->
+                        DropdownMenuItem(
+                            onClick = {
+                                filterGenderSelected = gender
+                                filterMenuExpanded = false
+                            },
+                            text = { Text(text = gender.name) }
+                        )
+                    }
+                }
+            }
+        }
+
         items(characters) { character ->
             character?.let {
                 CharacterCard(
