@@ -47,7 +47,9 @@ fun AppNavigation(
                     val encodedCharacterJson = URLEncoder.encode(characterJson, StandardCharsets.UTF_8.toString())
                     navController.navigate(
                         route = "characterDetails/${encodedCharacterJson}"
-                    )
+                    ) {
+                        popUpTo(CharactersList) { inclusive = true }
+                    }
                 }
             )
         }
